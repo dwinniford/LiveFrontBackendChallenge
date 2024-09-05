@@ -22,7 +22,7 @@
                     "description": "Referral code provided by the user"
                   },
                   "userId": {
-                    "type": "string",
+                    "type": "integer",
                     "description": "ID of the user creating the referral"
                   }
                 },
@@ -140,11 +140,14 @@
       "Referral": {
         "type": "object",
         "properties": {
+          "referralId": {
+            "type": "integer"
+          },
           "referralCode": {
             "type": "string"
           },
           "userId": {
-            "type": "string"
+            "type": "integer"
           },
           "deferredLink": {
             "type": "string",

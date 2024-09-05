@@ -12,6 +12,4 @@ namespace LiveFrontBackendChallenge
             throw new NotImplementedException();
         }
     }
-
-    
 }
