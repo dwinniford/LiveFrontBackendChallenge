@@ -1,0 +1,177 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Referral API",
+    "description": "API for managing referrals and onboarding steps.",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/referral": {
+      "post": {
+        "summary": "Create New Referral",
+        "description": "Create a new referral using the referral code and user ID.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "referralCode": {
+                    "type": "string",
+                    "description": "Referral code provided by the user"
+                  },
+                  "userId": {
+                    "type": "string",
+                    "description": "ID of the user creating the referral"
+                  }
+                },
+                "required": ["referralCode", "userId"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Referral"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "JWT is missing or doesn't match the user ID"
+          },
+          "400": {
+            "description": "Referral code or user ID is missing or invalid"
+          },
+          "404": {
+            "description": "User ID does not exist"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/referrals": {
+      "get": {
+        "summary": "Look up Referrals by user ID",
+        "description": "Retrieve an array of Referral objects that belong to a specific user.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The user ID to look up referrals for."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of Referral objects",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Referral"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "JWT is missing or doesn't match the user ID"
+          },
+          "400": {
+            "description": "User ID is missing"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/onboardingsteps": {
+      "get": {
+        "summary": "Get Onboarding Steps by Referral Code",
+        "description": "Returns the onboarding steps object for a given referral code.",
+        "parameters": [
+          {
+            "name": "referralCode",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The referral code for which onboarding steps are requested."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Onboarding steps found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnboardingSteps"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Referral": {
+        "type": "object",
+        "properties": {
+          "referralCode": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "deferredLink": {
+            "type": "string",
+            "description": "Link associated with the referral."
+          },
+          "activated": {
+            "type": "boolean",
+            "description": "Indicates if the referral has been activated."
+          }
+        }
+      },
+      "OnboardingSteps": {
+        "type": "object",
+        "properties": {
+          "isReferral": {
+            "type": "boolean",
+            "description": "Indicates if this is a referral-based onboarding."
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
