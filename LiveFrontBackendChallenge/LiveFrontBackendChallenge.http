@@ -1,0 +1,6 @@
+@LiveFrontBackendChallenge_HostAddress = http://localhost:5007
+
+GET {{LiveFrontBackendChallenge_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
