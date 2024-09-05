@@ -43,7 +43,7 @@
             }
           },
           "401": {
-            "description": "JWT is missing or doesn't match the user ID"
+            "description": "JWT is missing or invalid"
           },
           "400": {
             "description": "Referral code or user ID is missing or invalid"
