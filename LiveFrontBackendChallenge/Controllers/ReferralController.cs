@@ -33,11 +33,22 @@ namespace LiveFrontBackendChallenge.Controllers
             {
                 return BadRequest("User id or Referral code is incorrect");
             }
+            if(createReferralRequest.Phone.Length == 0 && createReferralRequest.Email.Length == 0)
+            {
+                return BadRequest("Phone or email is required");
+            }
             // Get Deferred link from mock http service.
             var deferredLink = await deferredLinkService.GetDeferredLink(createReferralRequest.ReferralCode);
             // save referral in mock repository
-            var referral = await referralService.CreateReferral(createReferralRequest.UserId, createReferralRequest.ReferralCode, deferredLink);
-            
+            var referral = await referralService.CreateReferral(
+                createReferralRequest.UserId, 
+                createReferralRequest.ReferralCode, 
+                deferredLink, 
+                createReferralRequest.Name,
+                createReferralRequest.Phone,
+                createReferralRequest.Email
+            );
+
             return Ok(referral);
         }
     }

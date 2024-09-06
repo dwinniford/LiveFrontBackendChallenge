@@ -61,7 +61,9 @@ namespace LiveFrontBackendChallenge.Tests
             CreateReferralRequest createReferralRequest = new()
             {
                 UserId = 1,
-                ReferralCode = "111111"
+                ReferralCode = "111111",
+                Name = "Bobby B.",
+                Phone = "1234567890"
             };
             var mockUserService = new Mock<IUserService>();
             mockUserService.Setup(u => u.GetUser(It.IsAny<int>())).Returns(Task.FromResult(new User {
@@ -70,8 +72,8 @@ namespace LiveFrontBackendChallenge.Tests
             }) as Task<User?>);
             var mockDeferredLinkService = new Mock<IDeferredLinkService>();
             var mockReferralService = new Mock<IReferralService>();
-            mockReferralService.Setup(r => r.CreateReferral(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Returns((int userId, string referralCode, string deferredLink) =>
+            mockReferralService.Setup(r => r.CreateReferral(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Returns((int userId, string referralCode, string deferredLink, string name, string phone, string email) =>
                     {
                         return Task.FromResult(
                             new ReferralDto
@@ -80,7 +82,10 @@ namespace LiveFrontBackendChallenge.Tests
                                 ReferralCode = referralCode,
                                 DeferredLink = deferredLink,
                                 Activated = false,
-                                ReferralId = 1
+                                ReferralId = 1,
+                                Name = name,
+                                Phone = phone,
+                                Email = email
                             }
                         );
                     }
@@ -100,7 +105,9 @@ namespace LiveFrontBackendChallenge.Tests
             CreateReferralRequest createReferralRequest = new()
             {
                 UserId = 1,
-                ReferralCode = "111111"
+                ReferralCode = "111111",
+                Name = "Bobby B.",
+                Phone = "1234567890"
             };
             var mockUserService = new Mock<IUserService>();
             mockUserService.Setup(u => u.GetUser(It.IsAny<int>())).Returns(Task.FromResult(new User {
@@ -110,8 +117,8 @@ namespace LiveFrontBackendChallenge.Tests
             var mockDeferredLinkService = new Mock<IDeferredLinkService>();
             mockDeferredLinkService.Setup(d => d.GetDeferredLink(It.IsAny<string>())).Returns(Task.FromResult($"test.url.with/referralcode?referralCode={createReferralRequest.ReferralCode}"));
             var mockReferralService = new Mock<IReferralService>();
-            mockReferralService.Setup(r => r.CreateReferral(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Returns((int userId, string referralCode, string deferredLink) =>
+            mockReferralService.Setup(r => r.CreateReferral(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Returns((int userId, string referralCode, string deferredLink, string name, string phone, string email) =>
                     {
                         return Task.FromResult(
                             new ReferralDto
@@ -120,7 +127,10 @@ namespace LiveFrontBackendChallenge.Tests
                                 ReferralCode = referralCode,
                                 DeferredLink = deferredLink,
                                 Activated = false,
-                                ReferralId = 1
+                                ReferralId = 1,
+                                Name = name,
+                                Phone = phone,
+                                Email = email
                             }
                         );
                     }
