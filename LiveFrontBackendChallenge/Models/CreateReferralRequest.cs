@@ -6,7 +6,7 @@ namespace LiveFrontBackendChallenge.Models
     {
         [Required]
         public int UserId { get; set; }
-        [Required]
+        [MinLength(6)]
         public string ReferralCode { get; set; } = String.Empty;
         
     }

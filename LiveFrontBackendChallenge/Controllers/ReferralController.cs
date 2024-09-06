@@ -10,10 +10,18 @@ namespace LiveFrontBackendChallenge
     public class ReferralController: ControllerBase
     {
         [HttpPost]
-        public Task<ReferralDto> CreateReferral(CreateReferralRequest createReferralRequest) {
-            
-            
-            throw new NotImplementedException();
+        public async Task<ActionResult> CreateReferral(CreateReferralRequest createReferralRequest) {
+
+            var referral  = await Task.FromResult<ReferralDto>(new ReferralDto
+            {
+                ReferralId = 1,
+                UserId = createReferralRequest.UserId,
+                ReferralCode = createReferralRequest.ReferralCode,
+                DeferredLink = "somelink.com",
+                Activated = false
+
+            });
+            return Ok(referral);
         }
     }
 }
