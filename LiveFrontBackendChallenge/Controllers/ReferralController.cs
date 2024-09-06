@@ -23,9 +23,15 @@ namespace LiveFrontBackendChallenge.Controllers
             // look up user from mock user service and return 404 if not found. return 400 if referral code does not match users referral code
             User? user = await userService.GetUser(createReferralRequest.UserId);
             if (user == null) {
-                return BadRequest($"User not found for userId {createReferralRequest.UserId}");
+                return NotFound($"User not found for userId {createReferralRequest.UserId}");
             };
+            if (user.ReferralCode != createReferralRequest.ReferralCode)
+            {
+                return BadRequest("User id or Referral code is incorrect");
+            }
             // Get Deferred link from mock service.  input referral code
+
+            // save referral in mock store
 
             var referral  = await Task.FromResult<ReferralDto>(new ReferralDto
             {
