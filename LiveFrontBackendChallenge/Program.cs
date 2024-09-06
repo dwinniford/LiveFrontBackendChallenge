@@ -6,6 +6,8 @@ builder.Services.AddAuthorization();
 builder.Services.AddAuthentication("Bearer").AddJwtBearer();
 builder.Services.AddControllers();
 builder.Services.AddTransient<IUserService, MockUserService>();
+builder.Services.AddTransient<IDeferredLinkService, MockDeferredLinkService>();
+builder.Services.AddTransient<IReferralService, MockReferralService>();
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

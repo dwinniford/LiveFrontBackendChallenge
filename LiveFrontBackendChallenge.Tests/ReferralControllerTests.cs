@@ -19,8 +19,9 @@ namespace LiveFrontBackendChallenge.Tests
                 ReferralCode = "555555"
             };
             var mockUserService = new Mock<IUserService>();
-            // mockUserService.Setup(u => u.GetUser(It.IsAny<int>())).Returns<User?>(null);
-            ReferralController referralController = new(mockUserService.Object);
+            var mockDeferredLinkService = new Mock<IDeferredLinkService>();
+            var mockReferralService = new Mock<IReferralService>();
+            ReferralController referralController = new(mockUserService.Object, mockDeferredLinkService.Object, mockReferralService.Object);
             // When
             var response = await referralController.CreateReferral(createReferralRequest);
             var responseObject = response as ObjectResult;
@@ -42,7 +43,9 @@ namespace LiveFrontBackendChallenge.Tests
                 UserId = 1,
                 ReferralCode = "111111"
             }) as Task<User?>);
-            ReferralController referralController = new(mockUserService.Object);
+            var mockDeferredLinkService = new Mock<IDeferredLinkService>();
+            var mockReferralService = new Mock<IReferralService>();
+            ReferralController referralController = new(mockUserService.Object, mockDeferredLinkService.Object, mockReferralService.Object);
             // When
             var response = await referralController.CreateReferral(createReferralRequest);
             var responseObject = response as ObjectResult;
@@ -65,13 +68,72 @@ namespace LiveFrontBackendChallenge.Tests
                 UserId = 1,
                 ReferralCode = "111111"
             }) as Task<User?>);
-            ReferralController referralController = new(mockUserService.Object);
+            var mockDeferredLinkService = new Mock<IDeferredLinkService>();
+            var mockReferralService = new Mock<IReferralService>();
+            mockReferralService.Setup(r => r.CreateReferral(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Returns((int userId, string referralCode, string deferredLink) =>
+                    {
+                        return Task.FromResult(
+                            new ReferralDto
+                            {
+                                UserId = userId,
+                                ReferralCode = referralCode,
+                                DeferredLink = deferredLink,
+                                Activated = false,
+                                ReferralId = 1
+                            }
+                        );
+                    }
+                );
+            ReferralController referralController = new(mockUserService.Object, mockDeferredLinkService.Object, mockReferralService.Object);
             // When
             var response = await referralController.CreateReferral(createReferralRequest);
             var responseObject = response as ObjectResult;
             // Then
             responseObject.Should().NotBeNull();
             responseObject?.StatusCode.Should().Be(200);
+        }
+        [Fact]
+        public async void ReferralController_Creates_DeferredLink_With_ReferralCode()
+        {
+            // Given
+            CreateReferralRequest createReferralRequest = new()
+            {
+                UserId = 1,
+                ReferralCode = "111111"
+            };
+            var mockUserService = new Mock<IUserService>();
+            mockUserService.Setup(u => u.GetUser(It.IsAny<int>())).Returns(Task.FromResult(new User {
+                UserId = 1,
+                ReferralCode = "111111"
+            }) as Task<User?>);
+            var mockDeferredLinkService = new Mock<IDeferredLinkService>();
+            mockDeferredLinkService.Setup(d => d.GetDeferredLink(It.IsAny<string>())).Returns(Task.FromResult($"test.url.with/referralcode?referralCode={createReferralRequest.ReferralCode}"));
+            var mockReferralService = new Mock<IReferralService>();
+            mockReferralService.Setup(r => r.CreateReferral(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Returns((int userId, string referralCode, string deferredLink) =>
+                    {
+                        return Task.FromResult(
+                            new ReferralDto
+                            {
+                                UserId = userId,
+                                ReferralCode = referralCode,
+                                DeferredLink = deferredLink,
+                                Activated = false,
+                                ReferralId = 1
+                            }
+                        );
+                    }
+                );
+            ReferralController referralController = new(mockUserService.Object, mockDeferredLinkService.Object, mockReferralService.Object);
+            // When
+            var response = await referralController.CreateReferral(createReferralRequest);
+            var responseObject = response as ObjectResult;
+            // Then
+            responseObject.Should().NotBeNull();
+            responseObject?.StatusCode.Should().Be(200);
+            var responseValue = responseObject?.Value as ReferralDto;
+            responseValue?.DeferredLink.Should().Contain(createReferralRequest.ReferralCode);
         }
         
     }

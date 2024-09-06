@@ -11,16 +11,20 @@ namespace LiveFrontBackendChallenge.Controllers
     public class ReferralController: ControllerBase
     {
         private readonly IUserService userService;
+        private readonly IDeferredLinkService deferredLinkService;
+        private readonly IReferralService referralService;
 
-        public ReferralController(IUserService userService)
+        public ReferralController(IUserService userService, IDeferredLinkService deferredLinkService, IReferralService referralService)
         {
             this.userService = userService;
+            this.deferredLinkService = deferredLinkService;
+            this.referralService = referralService;
         }
 
         [HttpPost]
         public async Task<ActionResult> CreateReferral(CreateReferralRequest createReferralRequest) {
 
-            // look up user from mock user service and return 404 if not found. return 400 if referral code does not match users referral code
+            // look up user from mock user repository
             User? user = await userService.GetUser(createReferralRequest.UserId);
             if (user == null) {
                 return NotFound($"User not found for userId {createReferralRequest.UserId}");
@@ -29,19 +33,11 @@ namespace LiveFrontBackendChallenge.Controllers
             {
                 return BadRequest("User id or Referral code is incorrect");
             }
-            // Get Deferred link from mock service.  input referral code
-
-            // save referral in mock store
-
-            var referral  = await Task.FromResult<ReferralDto>(new ReferralDto
-            {
-                ReferralId = 1,
-                UserId = createReferralRequest.UserId,
-                ReferralCode = createReferralRequest.ReferralCode,
-                DeferredLink = "somelink.com",
-                Activated = false
-
-            });
+            // Get Deferred link from mock http service.
+            var deferredLink = await deferredLinkService.GetDeferredLink(createReferralRequest.ReferralCode);
+            // save referral in mock repository
+            var referral = await referralService.CreateReferral(createReferralRequest.UserId, createReferralRequest.ReferralCode, deferredLink);
+            
             return Ok(referral);
         }
     }
